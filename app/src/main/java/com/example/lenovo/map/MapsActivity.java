@@ -1,6 +1,8 @@
 package com.example.lenovo.map;
 
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -25,6 +27,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        LocationManager locationManager;
+        String context= Context.LOCATION_SERVICE;
+        locationManager=(LocationManager)getSystemService(context);
     }
 
 
