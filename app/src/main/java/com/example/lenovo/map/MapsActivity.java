@@ -12,11 +12,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -70,48 +74,80 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Manifest.permission.ACCESS_FINE_LOCATION, true);
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
-            LocationListener listener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location newLocation) {
-
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-
-                }
-            };
-
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-            Criteria criteria = new Criteria();
-            String provider=locationManager.getBestProvider(criteria, true);
-            mMap.setMyLocationEnabled(true);
-
-            location = locationManager.getLastKnownLocation(provider);
-
-            //
-            locationManager.requestLocationUpdates(provider, 1000, 0, listener);
-
-            double latitude = location.getLatitude();
-            double longitude = location.getLongitude();
-            LatLng latLng = new LatLng(latitude, longitude);
-            mMap.addMarker(new MarkerOptions().position(latLng));
-
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
-            mMap.getUiSettings().setZoomGesturesEnabled(true);
             mMap.getUiSettings().setZoomControlsEnabled(true);
+            mMap.getUiSettings().setZoomGesturesEnabled(true);
+            //mMap.setMyLocationEnabled(true);
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    Toast.makeText(getApplicationContext(), marker.getTitle(), Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            });
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER, 5000, 0,
+                    new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+                            mMap.clear();
+                            CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
+                            CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
+                            double latitude = location.getLatitude();
+                            double longitude = location.getLongitude();
+                            LatLng latLng = new LatLng(latitude, longitude);
+                            mMap.addMarker(new MarkerOptions().position(latLng).title("Me"));
+                            mMap.moveCamera(center);
+                            mMap.animateCamera(zoom);
+                        }
+
+                        @Override
+                        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                        }
+
+                        @Override
+                        public void onProviderEnabled(String provider) {
+
+                        }
+
+                        @Override
+                        public void onProviderDisabled(String provider) {
+
+                        }
+                    });
+
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    3000, 0, new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+                            mMap.clear();
+                            CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
+                            CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+                            double latitude = location.getLatitude();
+                            double longitude = location.getLongitude();
+                            LatLng latLng = new LatLng(latitude, longitude);
+                            mMap.addMarker(new MarkerOptions().position(latLng).title("Me"));
+                            mMap.moveCamera(center);
+                            mMap.animateCamera(zoom);
+                        }
+
+                        @Override
+                        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                        }
+
+                        @Override
+                        public void onProviderEnabled(String provider) {
+
+                        }
+
+                        @Override
+                        public void onProviderDisabled(String provider) {
+
+                        }
+                    });
+
 
 
         }
