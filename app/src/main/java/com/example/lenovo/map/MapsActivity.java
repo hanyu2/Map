@@ -1,9 +1,7 @@
 package com.example.lenovo.map;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationListener;
@@ -147,8 +145,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         }
                     });
-
-
 
         }
     }

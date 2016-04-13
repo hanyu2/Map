@@ -1,7 +1,22 @@
 <resources>
-    <string name="app_name">Map</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="app_name">whatsup</string>
+
     <string name="permission_required_toast">Please permit location in the app</string>
     <string name="location_permission_denied">Location service was denied by user</string>
     <string name="permission_rationale_location">Permission rationale location ?</string>
+
+    <string name="title_activity_maps">Map</string>
+    <string name="send">send message</string>
+
+    <string name="username">E-mail</string>
+    <string name="password">Password</string>
+    <string name="reenter_password">Reenter password</string>
+    <string name="sign_in">sign in</string>
+    <string name="sign_up">sign up</string>
+
+    <string name="create">create</string>
+    <string name="text">Text</string>
+    <string name="title_message">Title:</string>
+    <string name="send_message">send</string>
+    <string name="title_activity_register">RegisterActivity</string>
 </resources>
