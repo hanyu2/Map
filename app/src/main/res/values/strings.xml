@@ -20,4 +20,6 @@
     <string name="send_message">send</string>
     <string name="title_activity_register">RegisterActivity</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_send_message">SendMessageActivity</string>
 </resources>

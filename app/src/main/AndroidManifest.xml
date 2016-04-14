@@ -42,6 +42,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".RegisterActivity" />
+        <activity
+            android:name=".SendMessageActivity"
+            android:label="@string/title_activity_send_message"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
