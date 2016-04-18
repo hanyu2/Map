@@ -3,9 +3,10 @@ package com.example.lenovo.map;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import com.google.android.gms.maps.CameraUpdateFactory;
 
@@ -29,9 +30,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap mMap;
     private Marker mMarker;
+    private Location location = null;
     private boolean bound = false;
     private boolean mPermissionDenied = false;
-    private Location location = null;
+    private boolean isLocated = false;
 
     /**
      * Request code for location permission request.
@@ -102,21 +104,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     return false;
                 }
             });
-            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            /*Criteria criteria = new Criteria();
+            String provider = locationManager.getBestProvider(criteria, true);*/
             locationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, 5000, 0,
                     new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
-                            mMap.clear();
-                            CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
+
+                            CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
                             CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
                             double latitude = location.getLatitude();
                             double longitude = location.getLongitude();
                             LatLng latLng = new LatLng(latitude, longitude);
-                            mMap.addMarker(new MarkerOptions().position(latLng).title("Me"));
+                            mMap.addMarker(new MarkerOptions().position(latLng).title("n"));
                             mMap.moveCamera(center);
                             mMap.animateCamera(zoom);
+                            isLocated = true;
+
                         }
 
                         @Override
@@ -135,7 +141,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     });
 
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+            /*locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     3000, 0, new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
@@ -145,7 +151,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             double latitude = location.getLatitude();
                             double longitude = location.getLongitude();
                             LatLng latLng = new LatLng(latitude, longitude);
-                            mMap.addMarker(new MarkerOptions().position(latLng).title("Me"));
+                            mMap.addMarker(new MarkerOptions().position(latLng).title("GPS"));
                             mMap.moveCamera(center);
                             mMap.animateCamera(zoom);
                         }
@@ -164,7 +170,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         public void onProviderDisabled(String provider) {
 
                         }
-                    });
+                    });*/
 
         }
     }

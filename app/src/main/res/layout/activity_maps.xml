@@ -5,9 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.lenovo.map.MapsActivity">
-    <RelativeLayout
+    <!--<android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:background="#292929"
+        android:textColor="?attr/android:textColorPrimary"
+        app:layout_scrollFlags="scroll|enterAlways"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/text"
+            android:textSize="@dimen/place_autocomplete_progress_size"
+            android:textStyle="bold"
+            android:text="@string/app_name"
+            android:textColor="#fafefc"
+            />
+    </android.support.v7.widget.Toolbar>-->
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         tools:context="com.example.lenovo.map.MapsActivity">
             <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
