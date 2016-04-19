@@ -38,13 +38,13 @@ public class MessageListActivity extends AppCompatActivity {
         editor = settings.edit();
 
         nickname = settings.getString("nickname", "default");
-        title = settings.getString("title","default");
+        title = settings.getString("title", "default");
         tag = settings.getString("tag","default");
         message = settings.getString("message","default");
         time = settings.getString("time","default");
 
         tv_nickname.setText(nickname);
-        tv_title.setText(title);
+        tv_title.setText(getIntent().getExtras().getString("title"));
         tv_tag.setText(tag);
         tv_message.setText(message);
         tv_time.setText(time);
@@ -57,7 +57,5 @@ public class MessageListActivity extends AppCompatActivity {
         };
         toolbar.setNavigationOnClickListener(toolbar_listener);
 
-
     }
-
 }

@@ -30,7 +30,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback{
@@ -43,6 +45,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean isLocated = false;
     Thread thread;
     UploadThread uploadThread;
+    FloatingActionButton add = null;
+    Map<String, Marker> markers = new HashMap<String, Marker>();
 
     /**
      * Request code for location permission request.
@@ -59,25 +63,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        FloatingActionButton add = (FloatingActionButton) findViewById(R.id.add);
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setClass(MapsActivity.this, SendMessageActivity.class);
-                MapsActivity.this.startActivity(intent);
-            }
-        });
-
-        FloatingActionButton refresh = (FloatingActionButton) findViewById(R.id.refresh);
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
 
     }
 
@@ -99,8 +84,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public boolean onMarkerClick(Marker marker) {
                 Intent intent = new Intent(MapsActivity.this, MessageListActivity.class);
+                intent.putExtra("ID", marker.getId());
+                intent.putExtra("title", marker.getTitle());
                 startActivity(intent);
                 return false;
+            }
+        });
+
+        add = (FloatingActionButton) findViewById(R.id.add);
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setClass(MapsActivity.this, SendMessageActivity.class);
+                MapsActivity.this.startActivity(intent);
+            }
+        });
+
+        FloatingActionButton refresh = (FloatingActionButton) findViewById(R.id.refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
     }
@@ -131,17 +136,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
-                            mMap.clear();
-                            CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
-                            CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
-                            double latitude = location.getLatitude();
-                            double longitude = location.getLongitude();
-                            LatLng latLng = new LatLng(latitude, longitude);
-                            mMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("n"));
-                            mMap.moveCamera(center);
-                            mMap.animateCamera(zoom);
-                            isLocated = true;
-
+                            if(!isLocated) {
+                                mMap.clear();
+                                CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
+                                CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
+                                double latitude = location.getLatitude();
+                                double longitude = location.getLongitude();
+                                LatLng latLng = new LatLng(latitude, longitude);
+                                mMarker = mMap.addMarker(new MarkerOptions().position(latLng));
+                                markers.put(mMarker.getId(), mMarker);
+                                mMap.moveCamera(center);
+                                mMap.animateCamera(zoom);
+                                isLocated = true;
+                            }
                         }
 
                         @Override
