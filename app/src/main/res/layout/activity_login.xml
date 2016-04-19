@@ -8,12 +8,13 @@
     tools:context="com.example.lenovo.map.LoginActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/tool_bar_send"
+        android:id="@+id/login_toolbar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.1"
         android:background="#292929"
         android:textColor="?attr/android:textColorPrimary"
+        app:layout_scrollFlags="scroll|enterAlways"
         >
         <TextView
             android:layout_width="wrap_content"
@@ -81,7 +82,7 @@
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
             android:ems="10"
-            android:id="@+id/edt_username"
+            android:id="@+id/edt_login_email"
             android:hint="@string/username"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:layout_alignParentTop="true"
@@ -94,24 +95,38 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:ems="10"
-            android:id="@+id/edt_password"
+            android:id="@+id/edt_login_password"
             android:hint="@string/password"
             android:shadowColor="#00ff00ff"
-            android:layout_below="@+id/edt_username"
-            android:layout_alignStart="@+id/edt_username"
+            android:layout_below="@+id/edt_login_email"
+            android:layout_alignStart="@+id/edt_login_email"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:drawableLeft="@android:drawable/ic_lock_lock"
             />
 
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/edt_login_password"
+            android:id="@+id/chbox_login_remember"
+            android:layout_marginTop="@dimen/activity_vertical_margin"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/chbox_login_remember"
+            android:layout_below="@id/edt_login_password"
+            android:text="@string/remember_me"
+            android:textSize="@dimen/text_size"
+            android:layout_marginTop="@dimen/activity_vertical_margin"/>
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/sign_in"
             android:id="@+id/btn_login"
-            android:layout_below="@+id/edt_password"
+            android:layout_below="@+id/chbox_login_remember"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_alignStart="@+id/edt_password"
-            android:layout_alignEnd="@+id/edt_password"
+            android:layout_alignStart="@+id/edt_login_password"
+            android:layout_alignEnd="@+id/edt_login_password"
             android:background="@drawable/button_green_background"
             android:textColor="#fafefc"
             />

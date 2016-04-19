@@ -14,8 +14,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,6 +26,11 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback{
@@ -34,6 +41,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean bound = false;
     private boolean mPermissionDenied = false;
     private boolean isLocated = false;
+    Thread thread;
+    UploadThread uploadThread;
 
     /**
      * Request code for location permission request.
@@ -68,6 +77,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         });
+
+
     }
 
 
@@ -84,6 +95,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         enableMyLocation();
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Intent intent = new Intent(MapsActivity.this, MessageListActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
     }
 
     private void enableMyLocation() {
@@ -112,13 +131,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
-
+                            mMap.clear();
                             CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
                             CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
                             double latitude = location.getLatitude();
                             double longitude = location.getLongitude();
                             LatLng latLng = new LatLng(latitude, longitude);
-                            mMap.addMarker(new MarkerOptions().position(latLng).title("n"));
+                            mMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("n"));
                             mMap.moveCamera(center);
                             mMap.animateCamera(zoom);
                             isLocated = true;
@@ -141,37 +160,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     });
 
-            /*locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    3000, 0, new LocationListener() {
-                        @Override
-                        public void onLocationChanged(Location location) {
-                            mMap.clear();
-                            CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
-                            CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
-                            double latitude = location.getLatitude();
-                            double longitude = location.getLongitude();
-                            LatLng latLng = new LatLng(latitude, longitude);
-                            mMap.addMarker(new MarkerOptions().position(latLng).title("GPS"));
-                            mMap.moveCamera(center);
-                            mMap.animateCamera(zoom);
-                        }
-
-                        @Override
-                        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                        }
-
-                        @Override
-                        public void onProviderEnabled(String provider) {
-
-                        }
-
-                        @Override
-                        public void onProviderDisabled(String provider) {
-
-                        }
-                    });*/
-
+        }
+    }
+    class UploadThread implements Runnable{
+        @Override
+        public void run() {
+            JSONObject msg = new JSONObject();
+            try {
+                msg.put("email", "krishnazongsi");
+                msg.put("lat", "1.001");
+                msg.put("lng", "2.001");
+                msg.put("time", "2016-04-13 11:20:22");
+                msg.put("type", 2);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            List<MessageData> datas = NetUtils.getMsgs(msg);
+            if(datas != null){
+                //在地图上显示消息
+            }
         }
     }
 }
