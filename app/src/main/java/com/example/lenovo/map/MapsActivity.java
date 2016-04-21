@@ -3,7 +3,7 @@ package com.example.lenovo.map;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
+
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,22 +14,24 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import android.widget.Toolbar;
+
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean bound = false;
     private boolean mPermissionDenied = false;
     private boolean isLocated = false;
+    private double  latitude;
+    private double  longitude;
     Thread thread;
     UploadThread uploadThread;
     FloatingActionButton add = null;
@@ -108,6 +112,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         });
+
     }
 
     private void enableMyLocation() {
@@ -129,24 +134,62 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             });
             final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            /*Criteria criteria = new Criteria();
-            String provider = locationManager.getBestProvider(criteria, true);*/
             locationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, 5000, 0,
                     new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
-                            if(!isLocated) {
-                                mMap.clear();
+                            if (!isLocated) {
+                                //mMap.clear();
                                 CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
                                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
-                                double latitude = location.getLatitude();
-                                double longitude = location.getLongitude();
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
                                 LatLng latLng = new LatLng(latitude, longitude);
                                 mMarker = mMap.addMarker(new MarkerOptions().position(latLng));
                                 markers.put(mMarker.getId(), mMarker);
-                                mMap.moveCamera(center);
-                                mMap.animateCamera(zoom);
+                               /* mMap.moveCamera(center);
+                                mMap.animateCamera(zoom);*/
+                                List<MessageData> messages = new ArrayList<MessageData>();
+                                double[] l1 = { 33.4248535, -111.9495278};
+                                String[] tag1 = {"hello", "world"};
+                                MessageData m1 = new MessageData("h@163.com", "2000", "2001", "nick",  l1, "test1", "message1", 3 ,tag1);
+                                double[] l2 = { 33.4436965, -111.9297588};
+                                String[] tag2 = {"hello2", "world2"};
+                                MessageData m2 = new MessageData("h@163.com", "2000", "2001", "nick",  l2, "test2", "message2", 3 ,tag2);
+                                messages.add(m1);
+                                messages.add(m2);
+                                double latMax = 0.0;
+                                double longMax = 0.0;
+                                for(int i = 0; i < messages.size(); i++){
+                                    MessageData msg = messages.get(i);
+                                    LatLng latLng2 = new LatLng(msg.getLatitude(), msg.getLongitude());
+                                    latMax = Math.max(latMax, Math.abs(Math.abs(msg.getLatitude()) - Math.abs(latitude)));
+                                    longMax = Math.max(longMax, Math.abs(Math.abs(msg.getLongitude()) - Math.abs(longitude)));
+                                    switch(i % 5){
+                                        case 0 :
+                                            mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                                            break;
+                                        case 1 :
+                                            mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                                            break;
+                                        case 2 :
+                                            mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                                            break;
+                                        case 3 :
+                                            mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                                            break;
+                                        case 4 :
+                                            mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+                                            break;
+                                    }
+
+                                }
+
+                                LatLngBounds AUSTRALIA = new LatLngBounds(
+                                        new LatLng(latitude - latMax, longitude - longMax), new LatLng(latitude + latMax, longitude + longMax));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(AUSTRALIA.getCenter(), 20));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(AUSTRALIA, 20));
                                 isLocated = true;
                             }
                         }
@@ -166,9 +209,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         }
                     });
-
         }
+
+
+        //Toast.makeText(getApplicationContext(), latMax + " " + longMax, Toast.LENGTH_LONG).show();
     }
+
     class UploadThread implements Runnable{
         @Override
         public void run() {
@@ -184,7 +230,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             List<MessageData> datas = NetUtils.getMsgs(msg);
             if(datas != null){
-                //在地图上显示消息
+
             }
         }
     }

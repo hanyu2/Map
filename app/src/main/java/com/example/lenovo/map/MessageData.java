@@ -84,4 +84,13 @@ public class MessageData {
         output += ", <[tags]=" + tagsToString(tag) + ">";
         return output;
     }
+
+    public double getLatitude(){
+        return  location[0];
+    }
+
+    public double getLongitude(){
+        return  location[1];
+    }
+
 }
