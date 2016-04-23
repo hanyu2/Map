@@ -9,7 +9,7 @@
     <string name="title_activity_maps">Map</string>
     <string name="send">send message</string>
 
-    <string name="username">E-mail</string>
+    <string name="username">Email</string>
     <string name="password">Password</string>
     <string name="reenter_password">Reenter password</string>
     <string name="remember_me">remember me</string>
@@ -25,10 +25,8 @@
     <string name="send_message">send</string>
     <string name="title_activity_register">RegisterActivity</string>
     <string name="title_message">title</string>
-    <string name="title_activity_send_message">SendMessageActivity</string>
 
-    <string name="message_detail">detail</string>
-
-    <string name="message">message</string>
-    <string name="title_activity_message_list">MessageListActivity</string>
+    <string name="message_list">List</string>
+    <string name="message">Message</string>
+    <string name="message_text">message</string>
 </resources>

@@ -54,7 +54,10 @@ public class LoginActivity extends AppCompatActivity {
         if(remember){
             settings = getSharedPreferences("setting",0);
             email = settings.getString("email","");
+            password = settings.getString("password","");
+            checkBox.setChecked(true);
             edt_email.setText(email);
+            edt_password.setText(password);
         }
         View.OnClickListener myListener = new View.OnClickListener() {
             @Override
@@ -113,13 +116,15 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this,"incorrect password",Toast.LENGTH_SHORT).show();
                 }
                 else if(data.equals("s")){
-                    Toast.makeText(LoginActivity.this,"login successfully",Toast.LENGTH_SHORT).show();
                     try {
                         remember = (checkBox.isChecked()) ? true : false;
                         settings = getSharedPreferences("setting",0);
                         editor = settings.edit();
                         editor.putBoolean("remember",remember);
                         editor.putString("email",email);
+                        if(remember){
+                            editor.putString("password",password);
+                        }
                         editor.commit();
                         Thread.sleep(1);
                         Intent intent = new Intent();

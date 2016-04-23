@@ -1,115 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.example.lenovo.map.MessageListActivity"
-    android:background="#ebeef5">
+    tools:context="com.example.lenovo.map.MessageListActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_detail_message"
+        android:id="@+id/toolbar_list_message"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.1"
-        android:background="#292929"
+        android:layout_weight="0.09"
+        android:background="@color/toolbarColor"
         android:textColor="?attr/android:textColorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:navigationIcon="@android:drawable/ic_menu_revert">
+        app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+        >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/message"
-            android:textSize="@dimen/place_autocomplete_progress_size"
+            android:textSize="@dimen/text_size"
             android:textStyle="bold"
-            android:text="@string/message"
-            android:textColor="#fafefc"
+            android:text="@string/message_list"
+            android:textColor="@color/textColor"
             />
     </android.support.v7.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/tv_nick_name"
-        android:layout_width="fill_parent"
+    <android.support.v7.widget.RecyclerView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/recyclerview_messageList"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.09"
-        android:layout_below="@+id/toolbar_detail_message"
-        android:enabled="true"
-        android:maxLines="1"
-        android:ems="10"
-        android:hint="@string/message_nickname"
-        android:inputType="text"
-        android:scrollbars="vertical"
-        android:background="@android:drawable/edit_text"
-        android:gravity="left"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        />
+        android:layout_weight="0.91"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        >
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.09"
-        android:layout_below="@+id/tv_nick_name"
-        android:enabled="true"
-        android:ems="10"
-        android:maxLines="1"
-        android:hint="@string/message_title"
-        android:inputType="text"
-        android:scrollbars="vertical"
-        android:background="@android:drawable/edit_text"
-        android:gravity="left"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        />
+    </android.support.v7.widget.RecyclerView>
 
-    <TextView
-        android:id="@+id/tv_tag"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.09"
-        android:layout_below="@+id/tv_nick_name"
-        android:enabled="true"
-        android:ems="10"
-        android:maxLines="1"
-        android:hint="@string/message_tag"
-        android:inputType="text"
-        android:scrollbars="vertical"
-        android:background="@android:drawable/edit_text"
-        android:gravity="left"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        />
-    <TextView
-        android:id="@+id/tv_message"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.53"
-        android:layout_below="@id/tv_tag"
-        android:enabled="true"
-        android:minLines="8"
-        android:maxLines="10"
-        android:scrollbars="vertical"
-        android:background="@android:drawable/edit_text"
-        android:gravity="top|left"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        />
-    <TextView
-        android:id="@+id/tv_time"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.1"
-        android:layout_below="@id/tv_message"
-        android:enabled="true"
-        android:scrollbars="vertical"
-        android:background="@android:drawable/edit_text"
-        android:gravity="left"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        />
 </LinearLayout>

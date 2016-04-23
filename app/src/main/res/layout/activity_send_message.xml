@@ -1,39 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.lenovo.map.SendMessageActivity">
+
     <android.support.v7.widget.Toolbar
-        android:id="@+id/tool_bar_send"
+        android:id="@+id/toolbar_send_message"
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:background="#292929"
+        android:layout_height="0dp"
+        android:layout_weight="0.09"
+        android:background="@color/toolbarColor"
         android:textColor="?attr/android:textColorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:navigationIcon="@android:drawable/ic_menu_revert">
+        app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+        >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/text"
-            android:textSize="23sp"
+            android:textSize="@dimen/text_size"
             android:textStyle="bold"
             android:text="@string/text"
-            android:textColor="#fafefc"
+            android:textColor="@color/textColor"
+            />
+        <Button
+            android:id="@+id/btn_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="?android:attr/selectableItemBackground"
+            android:textColor="@color/sendColor"
+            android:text="@string/send_message"
+            android:textSize="@dimen/text_size"
             />
     </android.support.v7.widget.Toolbar>
-
 
     <EditText
         android:id="@+id/edt_title"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tool_bar_send"
+        android:layout_height="0dp"
+        android:layout_weight="0.09"
+        android:layout_below="@+id/toolbar_message"
         android:enabled="true"
         android:ems="10"
-        android:hint="@string/title_message"
+        android:hint="@string/message_title"
+        android:inputType="text"
+        android:scrollbars="vertical"
+        android:gravity="top|left"
+        />
+    <EditText
+        android:id="@+id/edt_nick_name"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.09"
+        android:layout_below="@+id/edt_title"
+        android:enabled="true"
+        android:ems="10"
+        android:hint="@string/message_nickname"
+        android:inputType="text"
+        android:scrollbars="vertical"
+        android:gravity="top|left"
+        />
+    <EditText
+        android:id="@+id/edt_tag"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.09"
+        android:layout_below="@+id/edt_nick_name"
+        android:enabled="true"
+        android:ems="10"
+        android:hint="@string/message_tag"
         android:inputType="text"
         android:scrollbars="vertical"
         android:gravity="top|left"
@@ -41,8 +81,9 @@
     <EditText
         android:id="@+id/edt_message"
         android:layout_width="fill_parent"
-        android:layout_height="400dp"
-        android:layout_below="@id/edt_title"
+        android:layout_height="0dp"
+        android:layout_weight="0.64"
+        android:layout_below="@id/edt_tag"
         android:enabled="true"
         android:inputType="textMultiLine"
         android:minLines="8"
@@ -51,23 +92,4 @@
         android:background="@android:drawable/edit_text"
         android:gravity="top|left"
         />
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:layout_below="@id/edt_message">
-
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="@string/send_message"
-            android:id="@+id/btn_send"
-            android:layout_alignParentStart="true"
-            android:background="@drawable/button_blue_background"
-            android:textColor="#fafefc"
-            />
-    </RelativeLayout>
-</RelativeLayout>
+</LinearLayout>

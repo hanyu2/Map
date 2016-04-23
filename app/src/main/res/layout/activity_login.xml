@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.1"
-        android:background="#292929"
+        android:background="@color/toolbarColor"
         android:textColor="?attr/android:textColorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
         >
@@ -21,10 +21,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/text"
-            android:textSize="@dimen/place_autocomplete_progress_size"
+            android:textSize="@dimen/text_size"
             android:textStyle="bold"
             android:text="@string/app_name"
-            android:textColor="#fafefc"
+            android:textColor="@color/textColor"
             />
     </android.support.v7.widget.Toolbar>
 

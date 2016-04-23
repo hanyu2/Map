@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.lenovo.map.MessageDetailActivity"
+    android:background="@color/listColor">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_detail_message"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.09"
+        android:background="@color/toolbarColor"
+        android:textColor="?attr/android:textColorPrimary"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:navigationIcon="@drawable/ic_list_white_24dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/message"
+            android:textSize="@dimen/text_size"
+            android:textStyle="bold"
+            android:text="@string/message"
+            android:textColor="@color/textColor"
+            />
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v7.widget.RecyclerView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/recyclerview_message"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.31"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        >
+
+    </android.support.v7.widget.RecyclerView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:background="@android:color/white"
+            >
+            <TextView
+            android:id="@+id/tv_message_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:text="@string/message_text"
+            android:textSize="@dimen/text_size"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            />
+            <TextView
+                android:id="@+id/tv_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:textSize="@dimen/text_size"
+                android:textColor="@android:color/darker_gray"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

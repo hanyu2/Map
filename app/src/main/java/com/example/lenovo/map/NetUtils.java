@@ -148,6 +148,7 @@ public class NetUtils {
                 }
                 reader.close();
                 String jsonString = sb.toString();
+                System.out.println("==========sb = "+jsonString+"============");
                 JSONArray jsonArray = new JSONArray(jsonString);
                 List<MessageData> datas = new ArrayList<MessageData>();
                 for(int i = 0;i < jsonArray.length(); ++i){
@@ -161,7 +162,7 @@ public class NetUtils {
                     item.setMessage(object.getString("desc"));
                     item.setType(object.getInt("type"));
                     item.setTag(object.getString("tag"));
-                    //System.out.println(item.MToString());
+                    System.out.println(item.MToString());
                     datas.add(item);
                 }
                 return datas;
