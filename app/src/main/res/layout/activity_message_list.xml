@@ -18,6 +18,7 @@
         app:layout_scrollFlags="scroll|enterAlways"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         >
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,16 +31,19 @@
             />
     </android.support.v7.widget.Toolbar>
 
-    <android.support.v7.widget.RecyclerView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/recyclerview_messageList"
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_messageList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.91"
-        android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        >
+        android:layout_weight="0.1"
+        />
 
-    </android.support.v7.widget.RecyclerView>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager_messageList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.81"
+        android:background="@android:color/white">
 
+    </android.support.v4.view.ViewPager>
 </LinearLayout>

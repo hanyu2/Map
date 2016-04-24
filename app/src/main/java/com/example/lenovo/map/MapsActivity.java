@@ -4,10 +4,15 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +36,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Message;
+import android.widget.Toast;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,12 +53,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     FloatingActionButton add;
     FloatingActionButton list;
     FloatingActionButton refresh;
-    private Location location = null;
     private boolean bound = false;
     private boolean mPermissionDenied = false;
     private boolean isLocated = false;
     private double  latitude;
     private double  longitude;
+    Location location;
+    String provider;
     ArrayList<MessageData> dataList = new ArrayList<MessageData>();
 
     MyHandler handler;
@@ -74,7 +82,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        int resp = googleAPI.isGooglePlayServicesAvailable(this);
+        if(resp != ConnectionResult.SUCCESS){
+            Toast.makeText(this, "Google Play Service Error " + resp, Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -153,56 +165,99 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, true);
         } else if (mMap != null) {
-            // Access to the location has been granted to the app.
-            //mMap.getUiSettings().setZoomControlsEnabled(true);
-            //mMap.getUiSettings().setZoomGesturesEnabled(true);
-            //mMap.setMyLocationEnabled(true);
+            mMap.setMyLocationEnabled(true);
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            provider = locationManager.getBestProvider(criteria, true);
+            LocationListener locationListener = new LocationListener() {
+                public void onLocationChanged(Location currentLocation) {
+                    if(isBetterLocation(currentLocation, location)) {
+                        makeUseOfNewLocation(currentLocation);
+                        location = currentLocation;
+                    }
+                }
 
-            final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            if(!isLocated) {
-                locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER, 1000, 0,
-                        new LocationListener() {
-                            @Override
-                            public void onLocationChanged(Location location) {
-                                //mMap.clear();
-                                CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
-                                CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-                                LatLng latLng = new LatLng(latitude, longitude);
-                                mMarker = mMap.addMarker(new MarkerOptions().position(latLng));
-                                setMarkers();
-                               /* mMap.moveCamera(center);
-                                mMap.animateCamera(zoom);*/
-                                isLocated = true;
-                                handler = new MyHandler();
-                                uploadThread = new UploadThread();
-                                thread = new Thread(uploadThread);
-                                thread.start();
-                            }
+                public void onStatusChanged(String currentProvider, int status, Bundle extras) {
+                    if(status == 2) {
+                        provider = currentProvider;
+                    }
+                }
 
-                            @Override
-                            public void onStatusChanged(String provider, int status, Bundle extras) {
+                public void onProviderEnabled(String provider) {}
 
-                            }
+                public void onProviderDisabled(String provider) {}
+            };
 
-                            @Override
-                            public void onProviderEnabled(String provider) {
+            locationManager.requestLocationUpdates(provider, 1000, 0, locationListener);
+            handler = new MyHandler();
+            uploadThread = new UploadThread();
+            thread = new Thread(uploadThread);
+            thread.start();
+        }
+    }
 
-                            }
+    private static final int TWO_MINUTES = 1000 * 60 * 2;
 
-                            @Override
-                            public void onProviderDisabled(String provider) {
-
-                            }
-                        });
-            }
+    /** Determines whether one Location reading is better than the current Location fix
+     * @param location  The new Location that you want to evaluate
+     * @param currentBestLocation  The current Location fix, to which you want to compare the new one
+     */
+    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+        if (currentBestLocation == null) {
+            // A new location is always better than no location
+            return true;
         }
 
+        // Check whether the new location fix is newer or older
+        long timeDelta = location.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+        boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+        boolean isNewer = timeDelta > 0;
+
+        // If it's been more than two minutes since the current location, use the new location
+        // because the user has likely moved
+        if (isSignificantlyNewer) {
+            return true;
+            // If the new location is more than two minutes older, it must be worse
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
+
+        // Check whether the new location fix is more or less accurate
+        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        boolean isMoreAccurate = accuracyDelta > 0 ? true : false;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+        // Check if the old and new location are from the same provider
+        boolean isFromSameProvider = isSameProvider(location.getProvider(),
+                currentBestLocation.getProvider());
+
+        // Determine location quality using a combination of timeliness and accuracy
+        if (isMoreAccurate) {
+            return true;
+        }
+        return false;
+    }
+    public void makeUseOfNewLocation(Location location){
+        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        mMap.moveCamera(center);
+        mMap.animateCamera(zoom);
+    }
+
+
+    /** Checks whether two providers are the same */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
     }
 
     public void setMarkers(){
+        mMap.clear();
         Marker marker;
         double latMax = 0.0;
         double longMax = 0.0;
@@ -240,7 +295,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new LatLng(latitude - latMax, longitude - longMax), new LatLng(latitude + latMax, longitude + longMax));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(AUSTRALIA.getCenter(), 20));
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(AUSTRALIA, 20));
-        isLocated = true;
     }
 
     class MyHandler extends android.os.Handler{

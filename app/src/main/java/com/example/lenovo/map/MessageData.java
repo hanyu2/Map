@@ -97,7 +97,7 @@ public class MessageData implements Parcelable {
         List<String> ss = new ArrayList<String>();
         while(r < tagstr.length()){
             if(tagstr.charAt(r) == '#'){
-                ss.add(tagstr.substring(l, r-1));
+                ss.add(tagstr.substring(l, r));
                 l = r;
             }
             ++r;
