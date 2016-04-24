@@ -103,7 +103,7 @@ public class MessageData implements Parcelable {
             ++r;
         }
         if(l == 0) tag = new String[]{tagstr};
-        else tag = (String[])(ss.toArray());
+        else tag = ss.toArray(new String[0]);
     }
 
     public String MToString(){

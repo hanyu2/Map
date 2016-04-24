@@ -17,7 +17,7 @@
         android:background="@color/toolbarColor"
         android:textColor="?attr/android:textColorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:navigationIcon="@drawable/ic_list_white_24dp"
+        app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         >
         <TextView
             android:layout_width="wrap_content"

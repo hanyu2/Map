@@ -15,9 +15,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
-
+import java.lang.reflect.Array;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -31,7 +30,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Message;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private double  latitude;
     private double  longitude;
     ArrayList<MessageData> dataList = new ArrayList<MessageData>();
+
+    MyHandler handler;
     Thread thread;
     UploadThread uploadThread;
     Map<Marker, MessageData> markers;
@@ -86,11 +90,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        enableMyLocation();
-
         add = (FloatingActionButton) findViewById(R.id.add);
         refresh = (FloatingActionButton) findViewById(R.id.refresh);
         list = (FloatingActionButton) findViewById(R.id.list);
+        markers = new HashMap<Marker, MessageData>();
+        enableMyLocation();
+
+        //setMarkers();
         View.OnClickListener myListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,6 +129,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         add.setOnClickListener(myListener);
         refresh.setOnClickListener(myListener);
         list.setOnClickListener(myListener);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (markers.containsKey(marker)) {
+                    MessageData messageData = markers.get(marker);
+                    Intent intent = new Intent(MapsActivity.this, MessageDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("MessageDetail", messageData);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+                return false;
+            }
+        });
     }
 
     private void enableMyLocation() {
@@ -136,20 +157,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             //mMap.getUiSettings().setZoomControlsEnabled(true);
             //mMap.getUiSettings().setZoomGesturesEnabled(true);
             //mMap.setMyLocationEnabled(true);
-            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker) {
-                    if(markers.containsKey(marker)){
-                        MessageData messageData = markers.get(marker);
-                        Intent intent = new Intent(MapsActivity.this, MessageDetailActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable("MessageDetail", messageData);
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                    }
-                    return false;
-                }
-            });
+
             final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             if(!isLocated) {
                 locationManager.requestLocationUpdates(
@@ -164,51 +172,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 longitude = location.getLongitude();
                                 LatLng latLng = new LatLng(latitude, longitude);
                                 mMarker = mMap.addMarker(new MarkerOptions().position(latLng));
-
+                                setMarkers();
                                /* mMap.moveCamera(center);
                                 mMap.animateCamera(zoom);*/
-                                List<MessageData> messages = new ArrayList<MessageData>();
-                                double[] l1 = {33.4248535, -111.9495278};
-                                String[] tag1 = {"hello", "world"};
-                                MessageData m1 = new MessageData("h@163.com", "2000", "2001", "nick", l1, "test1", "message1", 3, tag1);
-                                double[] l2 = {33.4436965, -111.9297588};
-                                String[] tag2 = {"hello2", "world2"};
-                                MessageData m2 = new MessageData("h@163.com", "2000", "2001", "nick", l2, "test2", "message2", 3, tag2);
-                                messages.add(m1);
-                                messages.add(m2);
-                                double latMax = 0.0;
-                                double longMax = 0.0;
-                                for (int i = 0; i < messages.size(); i++) {
-                                    MessageData msg = messages.get(i);
-                                    LatLng latLng2 = new LatLng(msg.getLatitude(), msg.getLongitude());
-                                    latMax = Math.max(latMax, Math.abs(Math.abs(msg.getLatitude()) - Math.abs(latitude)));
-                                    longMax = Math.max(longMax, Math.abs(Math.abs(msg.getLongitude()) - Math.abs(longitude)));
-                                    switch (i % 5) {
-                                        case 0:
-                                            mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                                            break;
-                                        case 1:
-                                            mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                                            break;
-                                        case 2:
-                                            mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                                            break;
-                                        case 3:
-                                            mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-                                            break;
-                                        case 4:
-                                            mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-                                            break;
-                                    }
-
-                                }
-
-                                LatLngBounds AUSTRALIA = new LatLngBounds(
-                                        new LatLng(latitude - latMax, longitude - longMax), new LatLng(latitude + latMax, longitude + longMax));
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(AUSTRALIA.getCenter(), 20));
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(AUSTRALIA, 20));
                                 isLocated = true;
-
+                                handler = new MyHandler();
+                                uploadThread = new UploadThread();
+                                thread = new Thread(uploadThread);
+                                thread.start();
                             }
 
                             @Override
@@ -229,26 +200,89 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-
-        //Toast.makeText(getApplicationContext(), latMax + " " + longMax, Toast.LENGTH_LONG).show();
     }
 
+    public void setMarkers(){
+        Marker marker;
+        double latMax = 0.0;
+        double longMax = 0.0;
+        for (int i = 0; i < dataList.size(); i++) {
+            MessageData msg = dataList.get(i);
+            LatLng latLng2 = new LatLng(msg.getLatitude(), msg.getLongitude());
+            latMax = Math.max(latMax, Math.abs(Math.abs(msg.getLatitude()) - Math.abs(latitude)));
+            longMax = Math.max(longMax, Math.abs(Math.abs(msg.getLongitude()) - Math.abs(longitude)));
+            switch (i % 5) {
+                case 0:
+                    marker = mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                    markers.put(marker, msg);
+                    break;
+                case 1:
+                    marker = mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                    markers.put(marker, msg);
+                    break;
+                case 2:
+                    marker = mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                    markers.put(marker, msg);
+                    break;
+                case 3:
+                    marker = mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                    markers.put(marker, msg);
+                    break;
+                case 4:
+                    marker = mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+                    markers.put(marker, msg);
+                    break;
+            }
+
+        }
+
+        LatLngBounds AUSTRALIA = new LatLngBounds(
+                new LatLng(latitude - latMax, longitude - longMax), new LatLng(latitude + latMax, longitude + longMax));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(AUSTRALIA.getCenter(), 20));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(AUSTRALIA, 20));
+        isLocated = true;
+    }
+
+    class MyHandler extends android.os.Handler{
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            int msgId = msg.what;
+            if(msgId==1){
+                setMarkers();
+            }
+        }
+    }
     class UploadThread implements Runnable{
         @Override
         public void run() {
             JSONObject msg = new JSONObject();
             try {
-                msg.put("email", "krishnazongsi");
-                msg.put("lat", "1.001");
-                msg.put("lng", "2.001");
-                msg.put("time", "2016-04-13 11:20:22");
-                msg.put("type", 2);
+                SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String postTime = sDateFormat.format(new Date());
+                double tempLat = latitude;
+                double tempLng = longitude;
+                msg.put("lat",tempLat);
+                msg.put("lng",tempLng);
+                msg.put("type",1);
+                msg.put("time",postTime);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            List<MessageData> datas = NetUtils.getMsgs(msg);
-            if(datas != null){
 
+            List<MessageData> datas = NetUtils.getMsgs(msg);
+            System.out.println("+++++++++++++++++++++" + datas.size() + "++++++++++++++++++");
+            if(datas != null){
+                dataList.clear();
+                dataList.addAll(datas);
+
+                Message message = new Message();
+                message.what = 1;
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("dataList", dataList);
+                message.setData(bundle);
+                isLocated = false;
+                handler.sendMessage(message);
             }
         }
     }
