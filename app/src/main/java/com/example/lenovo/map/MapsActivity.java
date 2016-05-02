@@ -21,7 +21,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import java.lang.reflect.Array;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -46,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback{
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback, LocationListener{
 
     private GoogleMap mMap;
     private Marker mMarker;
@@ -58,8 +57,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean isLocated = false;
     private double  latitude;
     private double  longitude;
-    Location location;
-    String provider;
+    private Location lastLocation = null;
     ArrayList<MessageData> dataList = new ArrayList<MessageData>();
 
     MyHandler handler;
@@ -165,35 +163,42 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, true);
         } else if (mMap != null) {
+            handler = new MyHandler();
             mMap.setMyLocationEnabled(true);
             LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            Criteria criteria = new Criteria();
-            provider = locationManager.getBestProvider(criteria, true);
-            LocationListener locationListener = new LocationListener() {
-                public void onLocationChanged(Location currentLocation) {
-                    if(isBetterLocation(currentLocation, location)) {
-                        makeUseOfNewLocation(currentLocation);
-                        location = currentLocation;
-                    }
-                }
-
-                public void onStatusChanged(String currentProvider, int status, Bundle extras) {
-                    if(status == 2) {
-                        provider = currentProvider;
-                    }
-                }
-
-                public void onProviderEnabled(String provider) {}
-
-                public void onProviderDisabled(String provider) {}
-            };
-
-            locationManager.requestLocationUpdates(provider, 1000, 0, locationListener);
-            handler = new MyHandler();
-            uploadThread = new UploadThread();
-            thread = new Thread(uploadThread);
-            thread.start();
+            Location location = locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER);
+            if(location != null){
+                onLocationChanged(location);
+            }
+            locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 1000, 0, this);
         }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if(isBetterLocation(location, lastLocation)) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            LatLng latLng = new LatLng(latitude, longitude);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+            lastLocation = location;
+        }
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        // TODO Auto-generated method stub
     }
 
     private static final int TWO_MINUTES = 1000 * 60 * 2;
@@ -238,14 +243,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         return false;
     }
-    public void makeUseOfNewLocation(Location location){
-        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        mMap.moveCamera(center);
-        mMap.animateCamera(zoom);
-    }
 
 
     /** Checks whether two providers are the same */
@@ -257,8 +254,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void setMarkers(){
+        if(dataList.size() == 0) return;
+
         mMap.clear();
         Marker marker;
+        if(dataList.size() == 1){
+            MessageData msg = dataList.get(0);
+            LatLng latLng2 = new LatLng(msg.getLatitude(), msg.getLongitude());
+            marker = mMap.addMarker(new MarkerOptions().title(msg.getTitle()).position(latLng2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+            markers.put(marker, msg);
+            return;
+        }
         double latMax = 0.0;
         double longMax = 0.0;
         for (int i = 0; i < dataList.size(); i++) {
